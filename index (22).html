@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Main Idea Detective</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#23201B;
+    --font-display:'Special Elite','Courier New',monospace;
+    --font-body:'Public Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+    --bg-page:#E7DBB8;
+    --card-bg:#FBF6E8;
+    --card-bg-2:#F1E6C8;
+    --text:#23201B;
+    --text-soft:#5B5340;
+    --line:#C9B98A;
+    --red:#A63A2E;
+    --red-soft:#F1D9D3;
+    --teal:#2E6B5E;
+    --teal-soft:#D8E7E1;
+    --amber:#B9812E;
+    --amber-soft:#F1E3C6;
+    --shadow:rgba(35,32,27,0.22);
+    --tab-inactive:#D8C795;
+    --tab-active:#FBF6E8;
+    --radius:10px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg-page:#161209;
+      --card-bg:#241D14;
+      --card-bg-2:#2C2317;
+      --text:#F1E6C8;
+      --text-soft:#BFAF85;
+      --line:#4A3D25;
+      --red:#D97A6C;
+      --red-soft:#3B2320;
+      --teal:#5CB39E;
+      --teal-soft:#1E2E29;
+      --amber:#E0AE5C;
+      --amber-soft:#3A2E17;
+      --shadow:rgba(0,0,0,0.5);
+      --tab-inactive:#2C2317;
+      --tab-active:#241D14;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg-page:#161209;
+    --card-bg:#241D14;
+    --card-bg-2:#2C2317;
+    --text:#F1E6C8;
+    --text-soft:#BFAF85;
+    --line:#4A3D25;
+    --red:#D97A6C;
+    --red-soft:#3B2320;
+    --teal:#5CB39E;
+    --teal-soft:#1E2E29;
+    --amber:#E0AE5C;
+    --amber-soft:#3A2E17;
+    --shadow:rgba(0,0,0,0.5);
+    --tab-inactive:#2C2317;
+    --tab-active:#241D14;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0;
+    background:var(--bg-page);
+    color:var(--text);
+    font-family:var(--font-body);
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    -webkit-text-size-adjust:100%;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(0,0,0,0.05) 0, transparent 40%),
+      radial-gradient(circle at 82% 65%, rgba(0,0,0,0.05) 0, transparent 45%);
+    pointer-events:none;
+    z-index:0;
+  }
+  #app{
+    position:relative;
+    z-index:1;
+    max-width:640px;
+    margin:0 auto;
+    padding:18px 16px 40px;
+  }
+  h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;line-height:1.25;}
+  p{margin:0;line-height:1.55;}
+  .stamp-header{
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:14px;
+  }
+  .stamp-header .badge-icon{
+    font-size:26px;
+    filter:drop-shadow(0 1px 0 var(--shadow));
+  }
+  .stamp-header h1{font-size:1.35rem;letter-spacing:0.5px;color:var(--red);}
+  .stamp-header .sub{font-size:0.78rem;color:var(--text-soft);margin-top:2px;}
+
+  .card{
+    background:var(--card-bg);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:0 3px 0 var(--line), 0 6px 14px var(--shadow);
+    padding:18px;
+    margin-bottom:14px;
+  }
+  .intro-icon{font-size:34px;margin-bottom:8px;display:block;}
+  .intro-lead{font-size:0.98rem;color:var(--text-soft);margin-top:8px;}
+  .toolkit-grid{display:grid;gap:10px;margin-top:14px;}
+  .toolkit-item{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--card-bg-2);
+    border:1px dashed var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+  }
+  .toolkit-item .ti-icon{font-size:20px;line-height:1.4;}
+  .toolkit-item .ti-term{font-weight:700;font-size:0.92rem;}
+  .toolkit-item .ti-def{font-size:0.86rem;color:var(--text-soft);margin-top:2px;}
+
+  .btn{
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:0.92rem;
+    border:none;
+    border-radius:8px;
+    padding:12px 18px;
+    cursor:pointer;
+    background:var(--red);
+    color:#FBF6E8;
+    box-shadow:0 3px 0 rgba(0,0,0,0.2);
+    transition:transform 0.08s ease;
+  }
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,0.2);}
+  .btn:disabled{opacity:0.45;cursor:not-allowed;}
+  .btn.secondary{background:transparent;color:var(--text);border:1.5px solid var(--line);box-shadow:none;}
+  .btn.teal{background:var(--teal);}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+
+  .case-grid{display:grid;gap:12px;margin-top:14px;}
+  .case-tile{
+    display:flex;align-items:center;gap:12px;
+    background:var(--card-bg);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px;
+    text-align:left;
+    cursor:pointer;
+    box-shadow:0 3px 0 var(--line), 0 5px 12px var(--shadow);
+    color:var(--text);
+    font-family:var(--font-body);
+    width:100%;
+  }
+  .case-tile .ct-icon{font-size:28px;flex:0 0 auto;}
+  .case-tile .ct-title{font-weight:800;font-size:0.98rem;}
+  .case-tile .ct-code{font-family:var(--font-display);font-size:0.72rem;color:var(--text-soft);letter-spacing:1px;}
+  .case-tile .ct-status{margin-left:auto;font-size:0.78rem;color:var(--teal);font-weight:700;white-space:nowrap;}
+  .case-tile .ct-status.pending{color:var(--text-soft);}
+
+  .rank-bar{
+    background:var(--card-bg-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px;
+    margin-top:6px;
+  }
+  .rank-bar .rank-top{display:flex;justify-content:space-between;align-items:baseline;}
+  .rank-bar .rank-name{font-family:var(--font-display);font-size:1.05rem;color:var(--red);}
+  .rank-bar .rank-score{font-size:0.8rem;color:var(--text-soft);}
+  .meter{height:9px;border-radius:5px;background:var(--line);margin-top:8px;overflow:hidden;}
+  .meter-fill{height:100%;background:var(--teal);transition:width 0.4s ease;}
+
+  .case-topline{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;}
+  .case-topline .back-link{
+    background:none;border:none;color:var(--text-soft);font-family:var(--font-body);
+    font-size:0.85rem;font-weight:700;cursor:pointer;padding:6px 0;
+  }
+  .case-code{font-family:var(--font-display);font-size:0.75rem;color:var(--red);letter-spacing:1px;}
+
+  details.file-toggle{
+    background:var(--card-bg-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:10px 14px;
+    margin-bottom:14px;
+  }
+  details.file-toggle summary{
+    cursor:pointer;
+    font-weight:700;
+    font-size:0.9rem;
+    list-style:none;
+    display:flex;align-items:center;gap:8px;
+  }
+  details.file-toggle summary::-webkit-details-marker{display:none;}
+  details.file-toggle summary::before{content:"📁";font-size:1rem;}
+  details.file-toggle[open] summary::before{content:"📂";}
+  .passage{margin-top:10px;font-size:0.94rem;color:var(--text);}
+  .passage p{margin-bottom:10px;}
+  .passage p:last-child{margin-bottom:0;}
+
+  .stage-dots{display:flex;gap:6px;margin-bottom:12px;}
+  .stage-dot{width:9px;height:9px;border-radius:50%;background:var(--line);}
+  .stage-dot.active{background:var(--red);}
+  .stage-dot.done{background:var(--teal);}
+
+  .prompt{font-weight:700;font-size:1rem;margin-bottom:12px;}
+  .opt-list{display:grid;gap:8px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;
+    text-align:left;
+    background:var(--card-bg-2);
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:11px 12px;
+    cursor:pointer;
+    font-family:var(--font-body);
+    font-size:0.92rem;
+    color:var(--text);
+    width:100%;
+  }
+  .opt .opt-mark{
+    flex:0 0 auto;width:20px;height:20px;border-radius:5px;
+    border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;
+    font-size:0.75rem;margin-top:1px;background:var(--card-bg);
+  }
+  .opt.selected{border-color:var(--red);}
+  .opt.selected .opt-mark{background:var(--red);border-color:var(--red);color:#fff;}
+  .opt.correct{border-color:var(--teal);background:var(--teal-soft);}
+  .opt.correct .opt-mark{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .opt.wrong{border-color:var(--red);background:var(--red-soft);}
+  .opt.wrong .opt-mark{background:var(--red);border-color:var(--red);color:#fff;}
+  .opt.missed{border-color:var(--amber);background:var(--amber-soft);}
+  .opt:disabled, .opt[data-locked="1"]{cursor:default;}
+
+  .feedback{
+    margin-top:12px;padding:11px 13px;border-radius:8px;font-size:0.88rem;
+    display:flex;gap:8px;align-items:flex-start;
+  }
+  .feedback.good{background:var(--teal-soft);color:var(--teal);}
+  .feedback.bad{background:var(--red-soft);color:var(--red);}
+  .feedback .fb-icon{flex:0 0 auto;}
+  .feedback .fb-text{color:var(--text);}
+
+  .vocab-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .vocab-col-label{font-size:0.72rem;text-transform:none;color:var(--text-soft);margin-bottom:6px;font-weight:700;}
+  .vocab-card{
+    background:var(--card-bg-2);border:1.5px solid var(--line);border-radius:8px;
+    padding:10px;font-size:0.82rem;cursor:pointer;min-height:56px;
+    display:flex;align-items:center;color:var(--text);
+  }
+  .vocab-card.selected{border-color:var(--red);}
+  .vocab-card.matched{background:var(--teal-soft);border-color:var(--teal);cursor:default;opacity:0.85;}
+  .vocab-card.shake{animation:shake 0.35s ease;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-4px);}
+    75%{transform:translateX(4px);}
+  }
+
+  .seq-list{display:grid;gap:8px;}
+  .seq-card{
+    display:flex;align-items:center;gap:12px;
+    background:var(--card-bg-2);border:1.5px solid var(--line);border-radius:8px;
+    padding:11px 12px;cursor:pointer;font-size:0.9rem;color:var(--text);
+  }
+  .seq-card.assigned{border-color:var(--red);}
+  .seq-num{
+    flex:0 0 auto;width:24px;height:24px;border-radius:50%;
+    background:var(--card-bg);border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:800;
+    color:var(--text-soft);
+  }
+  .seq-card.assigned .seq-num{background:var(--red);border-color:var(--red);color:#fff;}
+  .seq-card.correct-slot{border-color:var(--teal);background:var(--teal-soft);}
+  .seq-card.correct-slot .seq-num{background:var(--teal);border-color:var(--teal);}
+  .seq-card.wrong-slot{border-color:var(--red);background:var(--red-soft);}
+
+  .closed-stamp{
+    position:relative;
+    text-align:center;
+    padding:20px 10px;
+  }
+  .closed-stamp .stamp{
+    display:inline-block;
+    font-family:var(--font-display);
+    font-size:1.4rem;
+    color:var(--red);
+    border:4px solid var(--red);
+    border-radius:10px;
+    padding:8px 20px;
+    transform:rotate(-7deg) scale(0.6);
+    opacity:0;
+    animation:stampIn 0.45s ease forwards;
+  }
+  @keyframes stampIn{
+    0%{transform:rotate(-7deg) scale(2.4);opacity:0;}
+    60%{transform:rotate(-7deg) scale(0.92);opacity:1;}
+    100%{transform:rotate(-7deg) scale(1);opacity:1;}
+  }
+  .closed-copy{margin-top:14px;color:var(--text-soft);font-size:0.9rem;}
+
+  .final-badge{text-align:center;padding:10px 6px 4px;}
+  .final-badge .fb-icon{font-size:44px;}
+  .final-badge h2{margin-top:8px;color:var(--red);font-size:1.3rem;}
+  .final-badge p{margin-top:8px;color:var(--text-soft);font-size:0.92rem;}
+
+  .foot-reset{
+    text-align:center;margin-top:22px;
+  }
+  .foot-reset button{
+    background:none;border:none;color:var(--text-soft);
+    font-size:0.78rem;text-decoration:underline;cursor:pointer;font-family:var(--font-body);
+  }
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+  :focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+</style>
+</head>
+<body>
+<div id="app" role="main"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- data collection ---------------- */
+  // Paste your Google Apps Script Web App URL between the quotes below.
+  // Leave it blank ("") to run the app with no data collection at all.
+  var WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwV7Hd_JRL54Xbxm2tiAFx3kWm_WFO5nxSotzCD0PiAuEYtx4Z3AlTQ3UwwJYrsOKS6/exec";
+
+  function sendEvent(evt){
+    if(!WEBHOOK_URL) return;
+    var payload = Object.assign({
+      app:"main-idea-detective",
+      student: (state.student && state.student.name) || "",
+      period: (state.student && state.student.period) || "",
+      ts: new Date().toISOString()
+    }, evt);
+    try{
+      fetch(WEBHOOK_URL, {
+        method:"POST",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify(payload)
+      }).catch(function(){});
+    }catch(e){ /* ignore network errors, never block the student's work */ }
+  }
+
+  /* ---------------- content ---------------- */
+
+  var TOOLKIT = [
+    {icon:"🧭", term:"Main Idea", def:"The one big idea that everything else in the passage supports — the case in a single sentence."},
+    {icon:"🔎", term:"Evidence (Supporting Detail)", def:"A fact from the passage that backs up the main idea."},
+    {icon:"📌", term:"Concluding Sentence", def:"The sentence that wraps up the whole passage — it doesn't just repeat one detail."}
+  ];
+
+  var CASES = [
+    {
+      code:"CASE NO. 01", icon:"🧊", title:"Incredible Icebergs",
+      passage:[
+        "Icebergs are large pieces of ice that float in the ocean. They break off from glaciers or ice shelves and drift into the sea.",
+        "Even though they float, most of an iceberg is hidden underwater \u2014 only the tip shows above the surface. Icebergs come in many shapes and sizes: some are as small as a car, others as big as a building. They're usually found in very cold places like the Arctic and Antarctica.",
+        "Icebergs can be dangerous to ships. Since most of the ice is underwater, a ship might not see how big the iceberg really is. That's what happened to the Titanic, a famous ship that sank after hitting an iceberg in 1912.",
+        "Even though icebergs can be dangerous, they're also beautiful. Scientists study icebergs to learn more about Earth's climate and oceans."
+      ],
+      stages:[
+        {
+          type:"mcq",
+          prompt:"What is the MAIN IDEA of this case?",
+          options:[
+            "Icebergs are floating pieces of ice that can be dangerous to ships, but scientists study them to learn about Earth.",
+            "The Titanic sank after hitting an iceberg in 1912.",
+            "Icebergs can be as small as a car or as big as a building.",
+            "The ocean near the North and South Poles is completely frozen."
+          ],
+          correct:0,
+          explain:"The passage covers shape, danger, AND science \u2014 this is the only sentence big enough to hold all of that together."
+        },
+        {
+          type:"evidence",
+          prompt:"Gather the evidence. Tap every sentence that supports the main idea.",
+          items:[
+            {text:"Most of an iceberg is hidden underwater, so ships may not see how big it really is.", correct:true},
+            {text:"Icebergs are usually found in very cold places like the Arctic and Antarctica.", correct:true},
+            {text:"Scientists study icebergs to learn about Earth's climate and oceans.", correct:true},
+            {text:"Icebergs are made mostly of rock and sand.", correct:false},
+            {text:"Icebergs never move once they form.", correct:false},
+            {text:"Every iceberg is exactly the same size.", correct:false}
+          ]
+        },
+        {
+          type:"mcq",
+          prompt:"Close the case. Which sentence best wraps up the whole passage?",
+          options:[
+            "Icebergs are fascinating \u2014 beautiful to look at, but powerful enough to sink a ship.",
+            "The Titanic sank in 1912.",
+            "Ice is very cold."
+          ],
+          correct:0,
+          explain:"A good closing sentence looks back at the WHOLE case \u2014 beauty and danger \u2014 instead of repeating just one detail."
+        }
+      ]
+    },
+    {
+      code:"CASE NO. 02", icon:"🏒", title:"Ice Hockey",
+      passage:[
+        "Ice hockey is a fast and exciting sport played on ice. Players wear ice skates to move quickly across the rink and use hockey sticks to hit a small rubber puck.",
+        "Each team tries to score goals by shooting the puck into the opponent's net. The team with the most goals at the end of the game wins. Players wear helmets, pads, and gloves to stay safe, and a referee makes sure everyone follows the rules.",
+        "Ice hockey requires teamwork, speed, and strategy. It's played professionally in many countries, including Canada and the United States, and can be played indoors or outdoors on frozen ponds. Many people enjoy watching it because it's thrilling and fast-paced."
+      ],
+      stages:[
+        {
+          type:"mcq",
+          prompt:"What is the MAIN IDEA of this case?",
+          options:[
+            "Ice hockey is a fast, physical team sport that takes skill, safety gear, and teamwork.",
+            "Players wear helmets, pads, and gloves during the game.",
+            "The team with the most goals wins the game.",
+            "Hockey sticks are used to hit a rubber puck."
+          ],
+          correct:0,
+          explain:"Skating, gear, and strategy are all examples \u2014 they support this bigger idea about what ice hockey is."
+        },
+        {
+          type:"evidence",
+          prompt:"Choose every sentence that supports the main idea.",
+          items:[
+            {text:"Players use skates to move quickly and sticks to hit the puck.", correct:true},
+            {text:"Teams try to score goals by shooting the puck into the opponent's net.", correct:true},
+            {text:"Players wear helmets, pads, and gloves to stay safe.", correct:true},
+            {text:"Ice hockey requires teamwork, speed, and strategy.", correct:true},
+            {text:"Ice hockey can only be played indoors.", correct:false},
+            {text:"Only one country plays ice hockey professionally.", correct:false},
+            {text:"The referee decides which team wins the game.", correct:false}
+          ]
+        }
+      ]
+    },
+    {
+      code:"CASE NO. 03", icon:"☄️", title:"Comets",
+      passage:[
+        "Comets are icy objects that orbit the Sun in space. They're made of ice, dust, and small rocks. When a comet gets close to the Sun, its ice and dust heat up and form a glowing tail \u2014 the tail always points away from the Sun because of solar wind.",
+        "Comets have been observed for thousands of years. Some appear only once in a lifetime, while others return regularly. Famous comets, like Halley's Comet, can even be seen from Earth without a telescope. Comets travel very fast \u2014 sometimes millions of kilometers per hour.",
+        "Scientists study comets to learn more about the early solar system. Observing comets helps us understand how planets and stars formed. Comets are fascinating because they're bright, fast, and mysterious."
+      ],
+      stages:[
+        {
+          type:"mcq",
+          prompt:"What is the MAIN IDEA of this case?",
+          options:[
+            "Comets are fast, icy objects that orbit the Sun, and scientists study them to learn about space.",
+            "A comet's tail always points away from the Sun.",
+            "Halley's Comet can be seen without a telescope.",
+            "All comets are exactly the same size and speed."
+          ],
+          correct:0,
+          explain:"This is the only sentence broad enough to cover what comets are made of, how they behave, AND why scientists care about them."
+        },
+        {
+          type:"evidence",
+          prompt:"Find exactly the three best supporting details.",
+          items:[
+            {text:"Comets are made of ice, dust, and small rocks.", correct:true},
+            {text:"When comets get close to the Sun, their ice and dust heat up and form a glowing tail.", correct:true},
+            {text:"Comets can travel millions of kilometers per hour.", correct:true},
+            {text:"Comets are only found near Earth.", correct:false},
+            {text:"Every comet can only be seen once and never returns.", correct:false},
+            {text:"Comets are solid balls of metal.", correct:false}
+          ]
+        }
+      ]
+    },
+    {
+      code:"CASE NO. 04", icon:"🧪", title:"The Scientific Method",
+      passage:[
+        "In ancient times, people tried to explain the world using only what they observed. They saw the Sun rise on one side and set on the other, so they concluded the Sun traveled around the Earth. Jumping straight from an observation to a conclusion like that is called non-scientific thinking.",
+        "The scientific method helps you avoid that mistake. It reminds you to treat your first idea as only one of several possible explanations, and to gather evidence before deciding you're right.",
+        "The five steps begin with a question and end with a conclusion based on evidence: (1) ask a question, (2) state a hypothesis \u2014 a possible answer, (3) test the hypothesis, (4) think about the findings, and (5) draw a conclusion and share it."
+      ],
+      stages:[
+        {
+          type:"mcq",
+          prompt:"What is the MAIN IDEA of this case?",
+          options:[
+            "The scientific method is a set of steps that helps you test ideas with evidence instead of guessing.",
+            "The Sun travels around the Earth.",
+            "A candy bar can cure a stomachache.",
+            "Ancient people always used the scientific method."
+          ],
+          correct:0,
+          explain:"The Sun and the candy bar are just examples used to explain WHY the scientific method matters \u2014 they aren't the main idea itself."
+        },
+        {
+          type:"vocab",
+          prompt:"Match each detective term to its meaning.",
+          pairs:[
+            {term:"Observation", def:"Something you notice using your senses"},
+            {term:"Hypothesis", def:"A possible answer to a question, made before testing"},
+            {term:"Non-scientific thinking", def:"Jumping from an observation straight to a conclusion, with no testing"},
+            {term:"Conclusion", def:"A decision based on evidence gathered from testing"}
+          ]
+        },
+        {
+          type:"sequence",
+          prompt:"Put the five steps of the scientific method in order. Tap them in order, first to last.",
+          steps:[
+            {id:"c", text:"Test the hypothesis"},
+            {id:"a", text:"Ask a question about your observation"},
+            {id:"e", text:"Draw a conclusion and share it"},
+            {id:"b", text:"State a hypothesis \u2014 a possible answer"},
+            {id:"d", text:"Think about the findings"}
+          ],
+          correctOrder:["a","b","c","d","e"]
+        }
+      ]
+    }
+  ];
+
+  /* ---------------- state ---------------- */
+
+  var STORE_KEY = "mid-detective-progress-v1";
+
+  function blankProgress(){
+    return CASES.map(function(c){
+      return {
+        stageStars: c.stages.map(function(){ return 0; }) // 0=not done,1=solved w/ hint,2=solved first try
+      };
+    });
+  }
+
+  var state = {
+    screen:"gate",
+    caseIdx:0,
+    stageIdx:0,
+    progress: blankProgress(),
+    student: {name:"", period:""},
+    temp:{}
+  };
+
+  var STUDENT_KEY = "mid-detective-student-v1";
+
+  function loadStudent(){
+    try{
+      var raw = window.localStorage.getItem(STUDENT_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        if(parsed && parsed.name) state.student = parsed;
+      }
+    }catch(e){}
+  }
+  function saveStudent(){
+    try{ window.localStorage.setItem(STUDENT_KEY, JSON.stringify(state.student)); }catch(e){}
+  }
+
+  function loadProgress(){
+    try{
+      var raw = window.localStorage.getItem(STORE_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        if(parsed && parsed.length === CASES.length){
+          state.progress = parsed;
+        }
+      }
+    }catch(e){ /* storage unavailable, continue with blank progress */ }
+  }
+
+  function saveProgress(){
+    try{
+      window.localStorage.setItem(STORE_KEY, JSON.stringify(state.progress));
+    }catch(e){ /* ignore */ }
+  }
+
+  function resetTemp(){
+    state.temp = { selectedMCQ:null, checked:false, evidenceSel:{}, evidenceChecks:0,
+                   vocabSelTerm:null, vocabMatched:[], vocabWrongFlash:null,
+                   seqOrder:[], seqChecked:false };
+  }
+
+  /* ---------------- helpers ---------------- */
+
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function caseStars(ci){
+    return state.progress[ci].stageStars.reduce(function(a,b){return a+b;},0);
+  }
+  function caseMaxStars(ci){
+    return CASES[ci].stages.length * 2;
+  }
+  function caseSolved(ci){
+    return state.progress[ci].stageStars.every(function(s){ return s>0; });
+  }
+  function totalStars(){
+    var t=0; for(var i=0;i<CASES.length;i++){ t+=caseStars(i); } return t;
+  }
+  function totalMaxStars(){
+    var t=0; for(var i=0;i<CASES.length;i++){ t+=caseMaxStars(i); } return t;
+  }
+  function rankLabel(pct){
+    if(pct>=100) return "Master Detective";
+    if(pct>=70) return "Lead Detective";
+    if(pct>=35) return "Deputy Detective";
+    return "Rookie Detective";
+  }
+
+  /* ---------------- render ---------------- */
+
+  var app = document.getElementById("app");
+
+  function render(){
+    if(state.screen==="gate") return renderGate();
+    if(state.screen==="intro") return renderIntro();
+    if(state.screen==="menu") return renderMenu();
+    if(state.screen==="case") return renderCase();
+  }
+
+  function renderGate(){
+    var s = state.student;
+    var html = "";
+    html += header();
+    html += '<div class="card">';
+    html += '<h2>Before you start\u2026</h2>';
+    html += '<p class="intro-lead">Tell us who you are so your teacher can see your work.</p>';
+    html += '<div class="opt-list" style="margin-top:14px;">';
+    html += '<label style="font-size:0.85rem;font-weight:700;">First name &amp; last initial</label>';
+    html += '<input id="gate-name" type="text" placeholder="e.g., Alex R." value="'+esc(s.name)+'" oninput="MID.setStudentField(\'name\',this.value)" style="padding:11px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--card-bg-2);color:var(--text);font-family:var(--font-body);font-size:0.94rem;">';
+    html += '<label style="font-size:0.85rem;font-weight:700;margin-top:6px;">Class period</label>';
+    html += '<input id="gate-period" type="text" placeholder="e.g., Period 3" value="'+esc(s.period)+'" oninput="MID.setStudentField(\'period\',this.value)" style="padding:11px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--card-bg-2);color:var(--text);font-family:var(--font-body);font-size:0.94rem;">';
+    html += '</div>';
+    html += '<div class="btn-row"><button class="btn" id="gate-submit" '+((s.name.trim()&&s.period.trim())?'':'disabled')+' onclick="MID.submitStudent()">Start the case files</button></div>';
+    html += '</div>';
+    app.innerHTML = html;
+  }
+
+  function renderIntro(){
+    var html = "";
+    html += header();
+    html += '<div class="card">';
+    html += '<span class="intro-icon">🕵️</span>';
+    html += '<h2>Welcome, Detective</h2>';
+    html += '<p class="intro-lead">Four case files just came in. Each one hides a MAIN IDEA \u2014 your job is to read the passage, gather the evidence, and close the case.</p>';
+    html += '<div class="toolkit-grid">';
+    TOOLKIT.forEach(function(t){
+      html += '<div class="toolkit-item"><div class="ti-icon">'+t.icon+'</div><div><div class="ti-term">'+esc(t.term)+'</div><div class="ti-def">'+esc(t.def)+'</div></div></div>';
+    });
+    html += '</div>';
+    html += '<div class="btn-row"><button class="btn" onclick="MID.go(\'menu\')">Open the case files</button></div>';
+    html += '</div>';
+    app.innerHTML = html;
+  }
+
+  function header(){
+    return '<div class="stamp-header"><span class="badge-icon">🔍</span><div><h1>Main Idea Detective</h1><div class="sub">Reading case files</div></div></div>';
+  }
+
+  function renderMenu(){
+    var pct = Math.round((totalStars()/totalMaxStars())*100);
+    var html = "";
+    html += header();
+    html += '<div class="rank-bar">';
+    html += '<div class="rank-top"><span class="rank-name">'+rankLabel(pct)+'</span><span class="rank-score">'+totalStars()+' / '+totalMaxStars()+' clues</span></div>';
+    html += '<div class="meter"><div class="meter-fill" style="width:'+pct+'%"></div></div>';
+    html += '</div>';
+    html += '<div class="case-grid">';
+    CASES.forEach(function(c,i){
+      var solved = caseSolved(i);
+      var started = caseStars(i)>0 && !solved;
+      var status = solved ? "Case closed" : (started ? "In progress" : "Not opened");
+      html += '<button class="case-tile" onclick="MID.openCase('+i+')">';
+      html += '<div class="ct-icon">'+c.icon+'</div>';
+      html += '<div><div class="ct-title">'+esc(c.title)+'</div><div class="ct-code">'+esc(c.code)+'</div></div>';
+      html += '<div class="ct-status'+(solved?'':' pending')+'">'+status+'</div>';
+      html += '</button>';
+    });
+    html += '</div>';
+    html += '<div class="foot-reset"><button onclick="MID.resetAll()">Start over from scratch</button></div>';
+    app.innerHTML = html;
+  }
+
+  function renderCase(){
+    var c = CASES[state.caseIdx];
+    var stageCount = c.stages.length;
+
+    if(state.stageIdx >= stageCount){
+      return renderCaseClosed();
+    }
+
+    var stage = c.stages[state.stageIdx];
+    var html = "";
+    html += '<div class="case-topline"><button class="back-link" onclick="MID.go(\'menu\')">\u2190 All cases</button><span class="case-code">'+esc(c.code)+'</span></div>';
+    html += '<h2 style="font-size:1.15rem;color:var(--text);margin-bottom:12px;">'+c.icon+' '+esc(c.title)+'</h2>';
+
+    html += '<details class="file-toggle"><summary>Read the case file</summary><div class="passage">';
+    c.passage.forEach(function(p){ html += '<p>'+esc(p)+'</p>'; });
+    html += '</div></details>';
+
+    html += '<div class="stage-dots">';
+    for(var i=0;i<stageCount;i++){
+      var cls = "stage-dot";
+      if(i===state.stageIdx) cls += " active";
+      else if(state.progress[state.caseIdx].stageStars[i]>0) cls += " done";
+      html += '<span class="'+cls+'"></span>';
+    }
+    html += '</div>';
+
+    html += '<div class="card">';
+    html += '<div class="prompt">'+esc(stage.prompt)+'</div>';
+
+    if(stage.type==="mcq") html += renderMCQBody(stage);
+    if(stage.type==="evidence") html += renderEvidenceBody(stage);
+    if(stage.type==="vocab") html += renderVocabBody(stage);
+    if(stage.type==="sequence") html += renderSequenceBody(stage);
+
+    html += '</div>';
+    app.innerHTML = html;
+  }
+
+  /* ---- MCQ ---- */
+  function renderMCQBody(stage){
+    var t = state.temp;
+    var html = '<div class="opt-list">';
+    stage.options.forEach(function(opt,i){
+      var cls = "opt";
+      var mark = String.fromCharCode(65+i);
+      if(t.checked){
+        if(i===stage.correct) cls += " correct";
+        else if(i===t.selectedMCQ) cls += " wrong";
+      } else if(i===t.selectedMCQ){
+        cls += " selected";
+      }
+      html += '<button class="'+cls+'" '+(t.checked?'data-locked="1"':'')+' onclick="'+(t.checked?'':'MID.selectMCQ('+i+')')+'">';
+      html += '<span class="opt-mark">'+mark+'</span><span>'+esc(opt)+'</span></button>';
+    });
+    html += '</div>';
+
+    if(t.checked){
+      var isRight = t.selectedMCQ===stage.correct;
+      html += '<div class="feedback '+(isRight?'good':'bad')+'"><span class="fb-icon">'+(isRight?'\u2705':'\u26A0\uFE0F')+'</span><span class="fb-text">'+esc(stage.explain)+'</span></div>';
+      html += '<div class="btn-row"><button class="btn" onclick="MID.nextStage()">Continue</button></div>';
+    } else {
+      html += '<div class="btn-row"><button class="btn" '+(t.selectedMCQ===null?'disabled':'')+' onclick="MID.checkMCQ()">Check answer</button></div>';
+    }
+    return html;
+  }
+
+  /* ---- Evidence multi-select ---- */
+  function renderEvidenceBody(stage){
+    var t = state.temp;
+    var locked = t.evidenceChecks>=2 || (t.evidenceDone===true);
+    var html = '<div class="opt-list">';
+    stage.items.forEach(function(item,i){
+      var sel = !!t.evidenceSel[i];
+      var cls = "opt";
+      var showFeedback = t.evidenceChecked;
+      if(showFeedback){
+        if(sel && item.correct) cls += " correct";
+        else if(sel && !item.correct) cls += " wrong";
+        else if(!sel && item.correct) cls += " missed";
+      } else if(sel){
+        cls += " selected";
+      }
+      html += '<button class="'+cls+'" '+(locked?'data-locked="1"':'')+' onclick="'+(locked?'':'MID.toggleEvidence('+i+')')+'">';
+      html += '<span class="opt-mark">'+(sel?"\u2713":"")+'</span><span>'+esc(item.text)+'</span></button>';
+    });
+    html += '</div>';
+
+    if(t.evidenceChecked){
+      var allRight = stage.items.every(function(item,i){ return !!t.evidenceSel[i]===item.correct; });
+      if(allRight || locked){
+        html += '<div class="feedback '+(allRight?'good':'bad')+'"><span class="fb-icon">'+(allRight?'\u2705':'\uD83D\uDCCC')+'</span><span class="fb-text">'+(allRight?'Nice work \u2014 that\u2019s all the evidence.':'Green checks are the real evidence; amber ones are what you missed.')+'</span></div>';
+        html += '<div class="btn-row"><button class="btn" onclick="MID.nextStage()">Continue</button></div>';
+      } else {
+        html += '<div class="feedback bad"><span class="fb-icon">\u26A0\uFE0F</span><span class="fb-text">Not quite \u2014 take another look and try again.</span></div>';
+        html += '<div class="btn-row"><button class="btn" onclick="MID.recheckEvidence()">Try again</button></div>';
+      }
+    } else {
+      var anySelected = Object.keys(t.evidenceSel).some(function(k){ return t.evidenceSel[k]; });
+      html += '<div class="btn-row"><button class="btn" '+(anySelected?'':'disabled')+' onclick="MID.checkEvidence()">Check evidence</button></div>';
+    }
+    return html;
+  }
+
+  /* ---- Vocab matching ---- */
+  function renderVocabBody(stage){
+    var t = state.temp;
+    var defsShuffled = t.vocabDefOrder;
+    var html = '<div class="vocab-grid">';
+    html += '<div><div class="vocab-col-label">Terms</div>';
+    stage.pairs.forEach(function(p,i){
+      var matched = t.vocabMatched.indexOf(i)!==-1;
+      var cls = "vocab-card";
+      if(matched) cls += " matched";
+      else if(t.vocabSelTerm===i) cls += " selected";
+      html += '<div class="'+cls+'" '+(matched?'':'onclick="MID.selectVocabTerm('+i+')"')+'>'+esc(p.term)+'</div>';
+    });
+    html += '</div>';
+    html += '<div><div class="vocab-col-label">Meanings</div>';
+    defsShuffled.forEach(function(defIdx){
+      var matched = t.vocabMatched.indexOf(defIdx)!==-1;
+      var cls = "vocab-card";
+      if(matched) cls += " matched";
+      if(t.vocabWrongFlash===defIdx) cls += " shake";
+      html += '<div class="'+cls+'" '+(matched?'':'onclick="MID.selectVocabDef('+defIdx+')"')+'>'+esc(stage.pairs[defIdx].def)+'</div>';
+    });
+    html += '</div></div>';
+
+    if(t.vocabMatched.length===stage.pairs.length){
+      html += '<div class="feedback good"><span class="fb-icon">\u2705</span><span class="fb-text">All matched \u2014 the toolkit is yours.</span></div>';
+      html += '<div class="btn-row"><button class="btn" onclick="MID.nextStage()">Continue</button></div>';
+    }
+    return html;
+  }
+
+  /* ---- Sequence ---- */
+  function renderSequenceBody(stage){
+    var t = state.temp;
+    var html = '<div class="seq-list">';
+    stage.steps.forEach(function(step){
+      var pos = t.seqOrder.indexOf(step.id);
+      var assigned = pos!==-1;
+      var cls = "seq-card";
+      if(t.seqChecked){
+        var correctPos = stage.correctOrder.indexOf(step.id);
+        if(pos===correctPos) cls += " correct-slot"; else cls += " wrong-slot";
+      } else if(assigned){
+        cls += " assigned";
+      }
+      html += '<div class="'+cls+'" '+(t.seqChecked?'':'onclick="MID.toggleSeq(\''+step.id+'\')"')+'>';
+      html += '<span class="seq-num">'+(assigned?(pos+1):'')+'</span><span>'+esc(step.text)+'</span></div>';
+    });
+    html += '</div>';
+
+    if(t.seqChecked){
+      var allRight = stage.steps.every(function(step){
+        return t.seqOrder.indexOf(step.id)===stage.correctOrder.indexOf(step.id);
+      });
+      html += '<div class="feedback '+(allRight?'good':'bad')+'"><span class="fb-icon">'+(allRight?'\u2705':'\u26A0\uFE0F')+'</span><span class="fb-text">'+(allRight?'That\u2019s the correct order \u2014 case closed.':'A few steps are out of order (marked in red). Try rearranging.')+'</span></div>';
+      if(allRight){
+        html += '<div class="btn-row"><button class="btn" onclick="MID.nextStage()">Continue</button></div>';
+      } else {
+        html += '<div class="btn-row"><button class="btn" onclick="MID.recheckSeq()">Try again</button></div>';
+      }
+    } else {
+      html += '<div class="btn-row"><button class="btn" '+(t.seqOrder.length===stage.steps.length?'':'disabled')+' onclick="MID.checkSeq()">Check order</button></div>';
+    }
+    return html;
+  }
+
+  function renderCaseClosed(){
+    var ci = state.caseIdx;
+    var c = CASES[ci];
+    var html = "";
+    html += '<div class="case-topline"><button class="back-link" onclick="MID.go(\'menu\')">\u2190 All cases</button><span class="case-code">'+esc(c.code)+'</span></div>';
+    html += '<div class="card closed-stamp">';
+    html += '<span class="stamp">CASE CLOSED</span>';
+    html += '<div class="closed-copy">You solved every clue in \u201c'+esc(c.title)+'.\u201d ('+caseStars(ci)+'/'+caseMaxStars(ci)+' clues)</div>';
+    html += '<div class="btn-row" style="justify-content:center;">';
+    if(ci < CASES.length-1){
+      html += '<button class="btn" onclick="MID.openCase('+(ci+1)+')">Next case \u2192</button>';
+    }
+    html += '<button class="btn secondary" onclick="MID.go(\'menu\')">Back to case files</button>';
+    html += '</div></div>';
+    app.innerHTML = html;
+  }
+
+  /* ---------------- actions ---------------- */
+
+  var MID = {};
+
+  MID.setStudentField = function(field,val){
+    state.student[field] = val;
+    var btn = document.getElementById("gate-submit");
+    if(btn) btn.disabled = !(state.student.name.trim() && state.student.period.trim());
+  };
+  MID.submitStudent = function(){
+    if(!state.student.name.trim() || !state.student.period.trim()) return;
+    saveStudent();
+    sendEvent({event:"start"});
+    state.screen = "intro";
+    render();
+  };
+
+  MID.go = function(screen){
+    state.screen = screen;
+    render();
+    window.scrollTo(0,0);
+  };
+
+  MID.openCase = function(i){
+    state.caseIdx = i;
+    var stars = state.progress[i].stageStars;
+    var firstUnfinished = stars.findIndex(function(s){ return s===0; });
+    state.stageIdx = firstUnfinished===-1 ? stars.length : firstUnfinished;
+    resetTemp();
+    prepStage();
+    state.screen = "case";
+    render();
+    window.scrollTo(0,0);
+  };
+
+  function prepStage(){
+    var c = CASES[state.caseIdx];
+    if(state.stageIdx >= c.stages.length) return;
+    var stage = c.stages[state.stageIdx];
+    resetTemp();
+    if(stage.type==="evidence"){
+      state.temp.evidenceSel = {};
+      state.temp.evidenceChecked = false;
+      state.temp.evidenceChecks = 0;
+    }
+    if(stage.type==="vocab"){
+      var order = stage.pairs.map(function(_,i){ return i; });
+      for(var i=order.length-1;i>0;i--){
+        var j = Math.floor(((i+7)*2654435761 % 2147483647)/2147483647*(i+1));
+        var tmp=order[i]; order[i]=order[j]; order[j]=tmp;
+      }
+      state.temp.vocabDefOrder = order;
+      state.temp.vocabMatched = [];
+      state.temp.vocabSelTerm = null;
+      state.temp.vocabWrongFlash = null;
+    }
+    if(stage.type==="sequence"){
+      state.temp.seqOrder = [];
+      state.temp.seqChecked = false;
+    }
+  }
+
+  MID.selectMCQ = function(i){
+    state.temp.selectedMCQ = i;
+    render();
+  };
+  MID.checkMCQ = function(){
+    if(state.temp.selectedMCQ===null) return;
+    state.temp.checked = true;
+    var stage = CASES[state.caseIdx].stages[state.stageIdx];
+    var right = state.temp.selectedMCQ===stage.correct;
+    awardStar(right ? 2 : 1);
+    sendEvent({event:"answer", caseTitle:CASES[state.caseIdx].title, stageIndex:state.stageIdx, stageType:"mcq", correct:right});
+    render();
+  };
+
+  MID.toggleEvidence = function(i){
+    if(state.temp.evidenceChecked && state.temp.evidenceChecks>=2) return;
+    if(state.temp.evidenceChecked) state.temp.evidenceChecked=false;
+    state.temp.evidenceSel[i] = !state.temp.evidenceSel[i];
+    render();
+  };
+  MID.checkEvidence = function(){
+    var stage = CASES[state.caseIdx].stages[state.stageIdx];
+    state.temp.evidenceChecked = true;
+    state.temp.evidenceChecks++;
+    var allRight = stage.items.every(function(item,i){ return !!state.temp.evidenceSel[i]===item.correct; });
+    if(allRight || state.temp.evidenceChecks>=2){
+      awardStar(allRight && state.temp.evidenceChecks===1 ? 2 : 1);
+      sendEvent({event:"answer", caseTitle:CASES[state.caseIdx].title, stageIndex:state.stageIdx, stageType:"evidence", correct:allRight, attempts:state.temp.evidenceChecks});
+    }
+    render();
+  };
+  MID.recheckEvidence = function(){
+    state.temp.evidenceChecked = false;
+    render();
+  };
+
+  MID.selectVocabTerm = function(i){
+    if(state.temp.vocabMatched.indexOf(i)!==-1) return;
+    state.temp.vocabSelTerm = i;
+    render();
+  };
+  MID.selectVocabDef = function(defIdx){
+    if(state.temp.vocabMatched.indexOf(defIdx)!==-1) return;
+    if(state.temp.vocabSelTerm===null) return;
+    if(state.temp.vocabSelTerm===defIdx){
+      state.temp.vocabMatched.push(defIdx);
+      state.temp.vocabSelTerm = null;
+      var stage = CASES[state.caseIdx].stages[state.stageIdx];
+      if(state.temp.vocabMatched.length===stage.pairs.length){
+        awardStar(2);
+        sendEvent({event:"answer", caseTitle:CASES[state.caseIdx].title, stageIndex:state.stageIdx, stageType:"vocab", correct:true});
+      }
+      render();
+    } else {
+      state.temp.vocabWrongFlash = defIdx;
+      state.temp.vocabSelTerm = null;
+      render();
+      setTimeout(function(){ state.temp.vocabWrongFlash=null; render(); }, 350);
+    }
+  };
+
+  MID.toggleSeq = function(id){
+    var idx = state.temp.seqOrder.indexOf(id);
+    if(idx!==-1){
+      state.temp.seqOrder.splice(idx,1);
+    } else {
+      state.temp.seqOrder.push(id);
+    }
+    render();
+  };
+  MID.checkSeq = function(){
+    var stage = CASES[state.caseIdx].stages[state.stageIdx];
+    state.temp.seqChecked = true;
+    var allRight = stage.steps.every(function(step){
+      return state.temp.seqOrder.indexOf(step.id)===stage.correctOrder.indexOf(step.id);
+    });
+    if(!state.temp._seqAttempts) state.temp._seqAttempts=0;
+    state.temp._seqAttempts++;
+    if(allRight){
+      awardStar(state.temp._seqAttempts===1 ? 2 : 1);
+    }
+    sendEvent({event:"answer", caseTitle:CASES[state.caseIdx].title, stageIndex:state.stageIdx, stageType:"sequence", correct:allRight, attempts:state.temp._seqAttempts});
+    render();
+  };
+  MID.recheckSeq = function(){
+    state.temp.seqChecked = false;
+    render();
+  };
+
+  function awardStar(n){
+    var cur = state.progress[state.caseIdx].stageStars[state.stageIdx];
+    if(n > cur){
+      state.progress[state.caseIdx].stageStars[state.stageIdx] = n;
+      saveProgress();
+    }
+  }
+
+  MID.nextStage = function(){
+    state.stageIdx++;
+    prepStage();
+    if(state.stageIdx >= CASES[state.caseIdx].stages.length){
+      sendEvent({event:"case_complete", caseTitle:CASES[state.caseIdx].title, stars:caseStars(state.caseIdx), maxStars:caseMaxStars(state.caseIdx)});
+    }
+    render();
+    window.scrollTo(0,0);
+  };
+
+  MID.resetAll = function(){
+    state.progress = blankProgress();
+    saveProgress();
+    render();
+  };
+
+  window.MID = MID;
+
+  /* ---------------- boot ---------------- */
+  resetTemp();
+  loadProgress();
+  loadStudent();
+  if(state.student.name.trim() && state.student.period.trim()){
+    state.screen = "menu";
+  }
+  render();
+})();
+</script>
+</body>
+</html>
